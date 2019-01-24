@@ -51,11 +51,11 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'tango_with_django_p.urls'
-
+TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates') #BASE_DIR is the directory of the project, take the base + template
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [TEMPLATE_DIR],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
