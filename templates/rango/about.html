@@ -1,0 +1,17 @@
+
+{% load staticfiles %}
+
+{% block title_block %}
+    About
+{% endblock %}
+
+{% block body_block %}
+        <h1>Rango says...</h1>
+        <div>
+            This tutorial has been put together by Raghad Abdul Rab<br />
+        </div>
+        <div>
+            visits: {{ visits }}
+            <img src="{{ MEDIA_URL}}cat.jpg" alt="Picture of a cat" />
+        </div>
+{% endblock %}
