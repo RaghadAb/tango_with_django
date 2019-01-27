@@ -19,7 +19,7 @@ def about(request):
     context_dict = {
         'aboutmessage': "I am about message."
     }
-    return HttpResponse('Rango Says: Here is the about page.<br><a href="/rango/">Back to home page</a>')
+    #return HttpResponse('Rango Says: Here is the about page.<br><a href="/rango/">Back to home page</a>')
 
     return render(request, 'rango/about.html', context=context_dict)
 
