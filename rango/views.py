@@ -1,33 +1,30 @@
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from rango.models import Page, Category
-from django.http import HttpResponse
-
-#from django.template import RequestContext
+from rango.forms import CategoryForm, PageForm
+from datetime import datetime
 
 def index(request):
-
-    #return HttpResponse('Rango says hello world! <br><a href="/rango/about/">About</a>')
-    # Construct a dictionary to pass to the template engine as its context.
-# Note the key boldmessage is the same as {{ boldmessage }} in the template!
-    #context_dict = {'boldmessage': "Crunchy, creamy, cookie, candy, cupcake!"} #refers to the index html page
-    #request.session.set_test_cookie()
-    category_list = Category.objects.order_by('-likes')[:5] #first five most viewed records
+    # Query the database for a list of ALL categories currently stored.
+    # Order the categories by no. likes in descending order.
+    # Retrieve the top 5 only - or all if less than 5.
+    # Place the list in our context_dict dictionary
+    # that will be passed to the template engine.
+    request.session.set_test_cookie()
+    category_list = Category.objects.order_by('-likes')[:5]
     page_list = Page.objects.order_by('-views')[:5]
     context_dict = {'categories': category_list, 'pages': page_list}
-# Return a rendered response to send to the client.
-# We make use of the shortcut function to make our lives easier. # Note that the first parameter is the template we wish to use.
-    return render(request, 'rango/index.html', context=context_dict)
 
 
+
+    response = render(request, 'rango/index.html', context=context_dict)
+    return response
 
 def about(request):
 
-    context_dict = {
-        'aboutmessage': "I am about message."
-    }
-    #return HttpResponse('Rango Says: Here is the about page.<br><a href="/rango/">Back to home page</a>')
 
-    return render(request, 'rango/about.html', context=context_dict)
+    context_dict['visits'] = request.session['visits']
+    return render(request, 'rango/about.html', context_dict)
 
 def show_category(request, category_name_slug):
     # Create a context dictionary which we can pass
@@ -60,9 +57,50 @@ def show_category(request, category_name_slug):
     # Go render the response and return it to the client.
     return render(request, 'rango/category.html', context_dict)
 
+def add_category(request):
+    form = CategoryForm()
+
+    # A HTTP POST?
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+
+        # Check if form provided is valid
+        if form.is_valid():
+            #Save the new category to the database
+            form.save(commit=True)
+            # After saving the category, we could give a confirmation
+            # message, but since the most recent category add is on the index
+            # page, we can direct user back to index page.
+            return index(request)
+        else:
+            # The supplied form contained errors -
+            # just print them to the terminal.
+            print(form.errors)
+
+    # Will handle the bad form, new form, or no form supplied cases.
+    # Render the form with error messages (if any).
+    return render(request, 'rango/add_category.html', {'form': form})
 
 
+def add_page(request, category_name_slug):
+        try:
+            category = Category.objects.get(slug=category_name_slug)
+        except Category.DoesNotExist:
+            category = None
 
+        form = PageForm()
+        if request.method == 'POST':
+            form = PageForm(request.POST)
+            if form.is_valid():
+                if category:
+                    page = form.save(commit=False)
+                    page.category = category
+                    page.views = 0
+                    page.save()
+                    return show_category(request, category_name_slug)
+            else:
+                print(form.errors)
 
-
+        context_dict = {'form':form, 'category': category}
+        return render(request, 'rango/add_page.html', context_dict)
 
