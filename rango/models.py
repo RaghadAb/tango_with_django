@@ -3,6 +3,7 @@ from django.template.defaultfilters import slugify
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Category(models.Model):
     length_max = 128
     name = models.CharField(max_length=length_max, unique=True)
@@ -34,5 +35,6 @@ class Page(models.Model):
 
     def __unicode__(self):
         return self.title
+
 
 
