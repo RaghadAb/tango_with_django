@@ -1,4 +1,4 @@
-
+{% extends 'rango/base.html' %}
 {% load staticfiles %}
 
 {% block title_block %}
@@ -7,6 +7,7 @@
 
 {% block body_block %}
         <h1>Rango says...</h1>
+        <h1><strong>About Page</strong><br /></h1>
         <div>
             This tutorial has been put together by Raghad Abdul Rab<br />
         </div>
@@ -16,4 +17,5 @@
             <p><img src="/static/images/rango1.jpg" alt="Picture of Rango" /></p>
 
         </div>
+        <p> visits: {{ visits }}</p>
 {% endblock %}
